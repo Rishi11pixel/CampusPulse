@@ -1,0 +1,96 @@
+{
+  "name": "CampusPulse — WF3 Weekly Insights",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "REDACTED_NODE_ID",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        144
+      ],
+      "id": "REDACTED_NODE_ID",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "CampusPulse_Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1478399647,
+          "mode": "list",
+          "cachedResultName": "Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=REDACTED"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "REDACTED_NODE_ID",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are CampusPulse's campus issue report writer.\n\nUse only the supplied JSON data. The ticket list has already been filtered to active issues and sorted by priority. Do not recalculate counts, change the order, or invent facts.\n\nCreate a concise, professional report for campus authorities with these sections:\n\n1. **Active Issue Summary**\n   - Total active tickets\n   - Urgent open count\n   - Overdue open count\n   - Normal open count\n\n2. **Priority-Ordered Active Tickets**\n   - List every ticket in the exact order supplied.\n   - For each ticket, include ticket ID, category, severity, location, submission timestamp, age in days, summary, and escalation status.\n   - Label each ticket URGENT, OVERDUE, or NORMAL based on its `priority_class`.\n   - Do not omit tickets.\n   - Clearly highlight immediate safety hazards, especially water near electrical equipment.\n\n3. **Recommended Actions**\n   - Give practical actions based on the supplied ticket details.\n   - Do not claim an issue has been resolved.\n   - Do not invent repeated-complaint counts or claim that more than 10 distinct students reported an issue unless the data explicitly proves it.\n\nThe priority order is urgent first, overdue second, normal third. Within each group, preserve the supplied order.\n\nInclude only active tickets. Do not include a resolved-ticket section or resolved-ticket counts.\n\nCalculated active-ticket data:\n{{ JSON.stringify($json) }}\n\nAccuracy rules:\n- Do not exaggerate or change the facts in ticket summaries. Say “near electrical equipment” when that is what the ticket says; do not claim direct contact unless explicitly reported.\n- Do not assume a hazard exists at a location unless the ticket data supports it. You may recommend checking for possible hazards.\n- Do not describe reports as confirmed duplicates. You may identify possible duplicates based on matching locations and descriptions.\n- Do not invent work already completed, assigned teams, deadlines, or status changes.\n- Preserve the priority classifications and ticket order exactly as supplied by the Code node.\n- Do not claim that a ticket has been resolved or addressed.\n- Include all active tickets and do not invent metrics.",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        112
+      ],
+      "id": "REDACTED_NODE_ID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
